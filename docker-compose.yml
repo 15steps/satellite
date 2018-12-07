@@ -55,7 +55,7 @@ services:
       labels:
         orbiter: "true" 
   webhook_repsonder:
-    build: wellfelix/webhook-responder
+    image: wellfelix/webhook-responder
     ports:
       - 3000:3000
     
