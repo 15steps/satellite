@@ -5,6 +5,12 @@ global:
       monitor: 'cadAdvisor-devops'
 rule_files:
         - '/etc/prometheus/alert-rules.yml'
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+          - targets: ['alertmanager:9093']
+     
 scrape_configs:
 - job_name: cadvisor
   scrape_interval: 5s
