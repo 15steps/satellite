@@ -58,5 +58,6 @@ services:
     image: wellfelix/webhook-responder
     ports:
       - 3000:3000
-    
+networks:
+  devops-net:
     
