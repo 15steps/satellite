@@ -4,8 +4,8 @@ route:
 receivers:
  - name: 'webHook'  
    webhook_configs:
-     send_resolved: true
-     url: 'devops_webhook_repsonder:3000/alert'
+    - send_resolved: true
+      url: 'devops_webhook_repsonder:3000/alert'
  
 #receivers:
 #    - name: 'slack'
