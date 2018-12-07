@@ -1,10 +1,16 @@
 route:
-    receiver: 'slack'
- 
+    receiver: 'webHook'
+
 receivers:
-    - name: 'slack'
-      slack_configs:
-          - send_resolved: true
-            username: 'bruno'
-            channel: '#GENERAL'
-            api_url: 'https://hooks.slack.com/services/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'
+ - name: 'webHook'  
+   webhook_configs:
+     send_resolved: true
+     url: 'devops_webhook_repsonder:3000/alert'
+ 
+#receivers:
+#    - name: 'slack'
+#      slack_configs:
+#          - send_resolved: true
+#            username: 'bruno'
+#            channel: '#GENERAL'
+#            api_url: 'https://hooks.slack.com/services/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'
