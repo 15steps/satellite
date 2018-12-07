@@ -7,6 +7,8 @@ services:
       - 8000:8000
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - devops-net
     deploy:
       placement:
         constraints:
@@ -21,6 +23,8 @@ services:
     - prometheus
     volumes:
     - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    networks:
+      - devops-net
   prometheus:
     image: prom/prometheus:latest
     ports:
@@ -30,6 +34,8 @@ services:
     volumes:
     - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     - ./alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+    networks:
+      - devops-net
     depends_on:
     - netdata
   netdata:
@@ -38,6 +44,8 @@ services:
     - 19999:19999
     depends_on:
     - cadvisor  
+    networks:
+      - devops-net
   cadvisor:
     image: google/cadvisor:latest
     ports:
@@ -47,12 +55,16 @@ services:
     - /var/run:/var/run:rw
     - /sys:/sys:ro
     - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - devops-net
     depends_on:
     - redis
   httpbin:
     image: kennethreitz/httpbin
     ports:
     - 8001:80
+    networks:
+      - devops-net
     deploy:
       labels:
         orbiter: "true" 
@@ -60,6 +72,8 @@ services:
     image: wellfelix/webhook-responder
     ports:
       - 3000:3000
+    networks:
+      - devops-net
 networks:
   devops-net:
     
