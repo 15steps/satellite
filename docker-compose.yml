@@ -15,10 +15,12 @@ services:
     image: prom/alertmanager
     ports:
     - 9093:9093
+    command: 
+    - --config.file=/etc/alertmanager/alertmanager.yml
     depends_on:
     - prometheus
     volumes:
-    - ./alert-manager.yml:/etc/alertmanager/config.yml
+    - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
   prometheus:
     image: prom/prometheus:latest
     ports:
