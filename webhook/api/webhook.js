@@ -41,8 +41,9 @@ router.post('/', async (req, res) => {
     console.log('Novo alerta disparado');
     if (req.body.status === 'firing') {
         try {
-            const service = serviceList.filter(service => service.name === incomingServiceName)[0];
-            console.log(`Escalando servico: ${service.name}`);
+            // const service = serviceList.filter(service => service.name === incomingServiceName);
+            const service = serviceList[0];
+            console.log(`Escalando servico: ${service}`);
             if (service) {
                 await axios.post(`http://devops_orbiter:8000/v1/orbiter/handle/${service.name}`, {
                     direction: true
