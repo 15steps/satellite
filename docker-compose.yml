@@ -55,10 +55,9 @@ services:
       - devops-net
     deploy:
       labels:
-        orbiter: "true" 
-  webhook_responder:
         orbiter: "true"
-        orbiter.up: 3
+        orbiter.up: 3 
+  webhook_responder:
     image: wellfelix/webhook-responder
     ports:
       - 3000:3000
