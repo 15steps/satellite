@@ -41,6 +41,8 @@ router.post('/', async (req, res) => {
     console.log('Novo alerta disparado');
     if (req.body.status === 'firing') {
         try {
+            console.log('CONTAINER_NAME');
+            console.log(container_label_com_docker_swarm_service_name)
             // const service = serviceList.filter(service => service.name === incomingServiceName);
             const service = serviceList[0];
             console.log(`Escalando servico: ${service}`);
