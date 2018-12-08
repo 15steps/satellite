@@ -36,16 +36,6 @@ services:
     - ./alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
     networks:
       - devops-net
-    depends_on:
-    - netdata
-  netdata:
-    image: netdata/netdata
-    ports:
-    - 19999:19999
-    depends_on:
-    - cadvisor  
-    networks:
-      - devops-net
   cadvisor:
     image: google/cadvisor:latest
     ports:
@@ -57,8 +47,6 @@ services:
     - /var/lib/docker/:/var/lib/docker:ro
     networks:
       - devops-net
-    depends_on:
-    - redis
   httpbin:
     image: kennethreitz/httpbin
     ports:
