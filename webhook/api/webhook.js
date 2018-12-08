@@ -36,15 +36,13 @@ const getOrbiterServices = async (req, res) => {
 
 router.post('/', async (req, res) => {
     const { 
-        container_label_com_docker_swarm_service_name: incomingServiceName 
-    } = req.body.commonLabels;
+        serviceName
+    } = req.body.commonAnnotations;
     console.log('Novo alerta disparado');
     if (req.body.status === 'firing') {
         try {
-            console.log('CONTAINER_NAME');
-            console.log(req.body);
-            // const service = serviceList.filter(service => service.name === incomingServiceName);
-            const service = serviceList[0];
+            const service = serviceList.filter(service => service.name === serviceName)[0];
+            // const service = serviceList[0];
             console.log(`Escalando servico: ${service}`);
             if (service) {
                 await axios.post(`http://devops_orbiter:8000/v1/orbiter/handle/${service.name}`, {
