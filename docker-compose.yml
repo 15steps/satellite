@@ -18,13 +18,13 @@ services:
     ports:
     - 9093:9093
     command: 
-    - --config.file=/etc/alertmanager/alertmanager.yml
+         - --config.file=/etc/alertmanager/alert-manager.yml
     depends_on:
-    - prometheus
+         - prometheus
     volumes:
-    - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+         - ./alert-manager.yml:/etc/alertmanager/alert-manager.yml
     networks:
-      - devops-net
+         - devops-net
   prometheus:
     image: prom/prometheus:latest
     ports:
