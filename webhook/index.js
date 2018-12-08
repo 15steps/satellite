@@ -1,21 +1,20 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const api = require('./api/router');
 
 const app = express();
+const BASE_URL = '/api';
+const PORT = process.env.PORT || 3000;
 
-app.use((req, res, next) => {
-    console.log(`---- Request to ${req.path} ----`);
-    next();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(BASE_URL, api);
+
+app.use((req, res) => {
+    res.status(404).json({
+        error: `URL ${req.path} not found`
+    });
 });
 
-app.get('/health', (req, res) => {
-    console.log('Service is up')
-    res.json({up: true});
-});
-
-app.post('/alert', (req, res) => {
-    console.log('BODY');
-    console.log(req.body);
-    res.end();
-});
-
-app.listen(3000, () => console.log('Server started on port 3000'));
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
