@@ -5,7 +5,8 @@ receivers:
  - name: 'webHook'  
    webhook_configs:
     - send_resolved: true
-      url: 'http://devops_webhook_repsonder:3000/api/webhook'
+      url: 'http://devops_webhook_responder:3000/api/webhook'
+      ##text: 'ALERT: {{ .GroupLabels.alertname }}'
  
 #receivers:
 #    - name: 'slack'
