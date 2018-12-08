@@ -6,7 +6,7 @@ const axios = require('axios').default;
  */
 const router = Router();
 
-const serviceList = [];
+let serviceList = [];
 
 router.use(async (req, res, next) => {
     if (serviceList.length === 0) {
