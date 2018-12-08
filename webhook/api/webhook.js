@@ -1,6 +1,6 @@
 const Router = require('express').Router;
 const orbiterAPI = require('../config/orbiterAPI');
-
+const axios = require('axios').default;
 /**
  * /api/webhook
  */
@@ -18,7 +18,7 @@ router.use(async (req, res, next) => {
 
 const getOrbiterServices = async (req, res) => {
     try {
-        const { data } = await orbiterAPI.get('/autoscaler');
+        const { data } = await axios.get('http://devops_orbiter:8000/v1/orbiter/autoscaler');
         if (data.data) {
             serviceList = data.data.map(service => {
                 return {
@@ -41,10 +41,10 @@ router.post('/', async (req, res) => {
     console.log('Novo alerta disparado');
     if (req.body.status === 'firing') {
         try {
-            console.log('Enviando request p/ Orbiter');
             const service = serviceList.filter(service => service.name === incomingServiceName)[0];
+            console.log(`Escalando servico: ${service.name}`);
             if (service) {
-                await orbiterAPI.post(`/handle/${service.name}`, {
+                await axios.post(`http://devops_orbiter:8000/v1/orbiter/handle/${service.name}`, {
                     direction: true
                 });
                 console.log('Req p/ orbiter enviada com sucesso');
