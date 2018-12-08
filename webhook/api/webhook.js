@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
     if (req.body.status === 'firing') {
         try {
             console.log('CONTAINER_NAME');
-            console.log(req.body.commonLabels);
+            console.log(req.body);
             // const service = serviceList.filter(service => service.name === incomingServiceName);
             const service = serviceList[0];
             console.log(`Escalando servico: ${service}`);
