@@ -1,0 +1,2 @@
+
+# Docker Swarm Containers Autoscaling
