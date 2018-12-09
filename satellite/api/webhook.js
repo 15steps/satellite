@@ -8,8 +8,8 @@ const router = Router();
 
 const autoscalers = new Map();
 const ORBITER_URL = 'http://devops_orbiter:8000/v1/orbiter';
-const UPSCALING_INTERVAL = process.env.UPSCALING_INTERVAL || 5000;
-const DOWNSCALING_INTERVAL = process.env.DOWNSCALING_INTERVAL || 3000;
+const UPSCALING_INTERVAL = process.env.UPSCALING_INTERVAL || 10 * 1000;
+const DOWNSCALING_INTERVAL = process.env.DOWNSCALING_INTERVAL || 5 * 1000;
 
 router.use(async (req, res, next) => {
     logger.info('Fetching Orbiter services');
@@ -83,7 +83,7 @@ router.post('/', async (req, res) => {
             if (!serviceName) {
                 throw new Error('Resolving alert does not have a valid service name!');
             }
-            logger.info(`Service ${serviceName} normalized. Decreasing number of replicas.`)
+            logger.info(`Service ${serviceName} normalized. Decreasing number of replicas.`);
             const autoscaler = autoscalers.get(serviceName);
             if (!autoscaler) {
                 throw new Error(`Service ${serviceName} was not found`);
@@ -91,7 +91,7 @@ router.post('/', async (req, res) => {
             // Stop upscaling
             clearInterval(autoscaler.intervalId);
             logger.info('Waiting 5s to start downscaling');
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve,  60 * 1000));
 
             // Start downscaling
             for (let i = 0; i < autoscaler.scalingCount; ++i) {
