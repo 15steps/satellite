@@ -7,3 +7,4 @@ groups:
       severity: page
     annotations:
       summary: High CPU Utilization
+      serviceName: autoswarm/devops_httpbin
