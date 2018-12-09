@@ -1,2 +1,33 @@
-la mundo
-
+version: '3.7'
+services:
+  cadvisor:
+    image: google/cadvisor:latest
+    ports:
+    - 8080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - devops-net
+  httpbin:
+    image: kennethreitz/httpbin
+    ports:
+    - 8001:80
+    networks:
+      - devops-net
+    deploy:
+      labels:
+        orbiter: "true"
+        orbiter.up: 3 
+  satellite:
+    image: wellfelix/satellite
+    ports:
+      - 3000:3000
+    networks:
+      - devops-net
+networks:
+  devops-net:
+    attachable: true
+    
