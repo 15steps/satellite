@@ -8,8 +8,8 @@ const router = Router();
 
 const autoscalers = new Map();
 const ORBITER_URL = 'http://devops_orbiter:8000/v1/orbiter';
-const UPSCALING_INTERVAL = process.env.UPSCALING_INTERVAL || 2000;
-const DOWNSCALING_INTERVAL = process.env.DOWNSCALING_INTERVAL || 2000;
+const UPSCALING_INTERVAL = process.env.UPSCALING_INTERVAL || 5000;
+const DOWNSCALING_INTERVAL = process.env.DOWNSCALING_INTERVAL || 3000;
 
 router.use(async (req, res, next) => {
     logger.info('Fetching Orbiter services');
@@ -93,10 +93,15 @@ router.post('/', async (req, res) => {
 
             // Start downscaling
             for (let i = 0; i < autoscaler.scalingCount; ++i) {
-                await axios.post(`${ORBITER_URL}/handle/${serviceName}`, {
-                    direction: false
-                });
-                await new Promise(resolve => setTimeout(resolve, DOWNSCALING_INTERVAL));
+                try {
+                    await axios.post(`${ORBITER_URL}/handle/${serviceName}`, {
+                        direction: false
+                    });
+                    await new Promise(resolve => setTimeout(resolve, DOWNSCALING_INTERVAL));
+                } catch (e) {
+                    logger.error(e.message);
+                    logger.error(e.stack);
+                }
             }
 
             // Reset autoscaler
