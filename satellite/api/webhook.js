@@ -7,8 +7,9 @@ const logger = require('../config/logger');
 const router = Router();
 
 const autoscalers = new Map();
+const intervals = {};
 const ORBITER_URL = 'http://devops_orbiter:8000/v1/orbiter';
-const UPSCALING_INTERVAL = process.env.UPSCALING_INTERVAL || 10 * 1000;
+const UPSCALING_INTERVAL = process.env.UPSCALING_INTERVAL || 42 * 1000;
 const DOWNSCALING_INTERVAL = process.env.DOWNSCALING_INTERVAL || 5 * 1000;
 
 router.use(async (req, res, next) => {
@@ -26,7 +27,7 @@ const getOrbiterServices = async (req, res) => {
                 autoscalers.set(service.name, {
                     name: service.name,
                     scalingCount: 0,
-                    intervalId: null
+                    // intervalId: null
                 });
             }
             logger.info('Orbiter services fetched');
@@ -54,7 +55,7 @@ router.post('/', async (req, res) => {
                 logger.info(`Requesting autoscaling for: ${service.name}`);
                 
                 const autoscaler = autoscalers.get(service.name);
-                const intervalId = setInterval(async () => {
+                intervals[service.name] = setInterval(async () => {
                     await axios.post(`${ORBITER_URL}/handle/${service.name}`, {
                         direction: true
                     });
@@ -64,12 +65,12 @@ router.post('/', async (req, res) => {
                     });
                 }, UPSCALING_INTERVAL);
 
-                autoscalers.set(service.name, {
-                    ...autoscaler,
-                    intervalId
-                });
+                // autoscalers.get(service.name).set(service.name, {
+                //     ...autoscaler,
+                //     intervalId
+                // });
 
-                logger.info(`Successfully scaled ${service.name}`);
+                logger.info(`Upscaling started for ${service.name}`);
             } else {
                 throw new Error('Service was not found on the list of Orbiter autoscalers');
             }
@@ -89,8 +90,9 @@ router.post('/', async (req, res) => {
                 throw new Error(`Service ${serviceName} was not found`);
             }
             // Stop upscaling
-            clearInterval(autoscaler.intervalId);
-            logger.info('Waiting 1m to start downscaling; intervalId '+ autoscaler.intervalId);
+            // clearInterval(autoscaler.intervalId);
+            clearInterval(intervals[serviceName]);
+            logger.info('Waiting 1m to start downscaling; intervalId '+ intervals[serviceName]);
             await new Promise(resolve => setTimeout(resolve,  60 * 1000));
 
             // Start downscaling
@@ -110,7 +112,7 @@ router.post('/', async (req, res) => {
             autoscalers.set(serviceName, {
                 ...autoscaler,
                 scalingCount: 0,
-                intervalId: null
+                // intervalId: null
             });
         } catch (e) {
             logger.error(e.message);
