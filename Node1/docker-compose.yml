@@ -59,7 +59,6 @@ services:
       replicas: 2 
       labels:
         orbiter: "true"
-        orbiter.up: 3 
   satellite:
     image: wellfelix/satellite
     ports:
