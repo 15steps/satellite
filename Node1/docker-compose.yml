@@ -47,6 +47,8 @@ services:
     - /var/lib/docker/:/var/lib/docker:ro
     networks:
       - devops-net
+    deploy:
+      mode: global
   httpbin:
     image: kennethreitz/httpbin
     ports:
@@ -54,9 +56,9 @@ services:
     networks:
       - devops-net
     deploy:
+      replicas: 2 
       labels:
         orbiter: "true"
-        orbiter.up: 3 
   satellite:
     image: wellfelix/satellite
     ports:
