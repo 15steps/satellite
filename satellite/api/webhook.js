@@ -54,8 +54,8 @@ router.post('/', async (req, res) => {
             if (service) {
                 logger.info(`Requesting autoscaling for: ${service.name}`);
                 
-                const autoscaler = autoscalers.get(service.name);
                 intervals[service.name] = setInterval(async () => {
+                    const autoscaler = autoscalers.get(service.name);
                     await axios.post(`${ORBITER_URL}/handle/${service.name}`, {
                         direction: true
                     });
@@ -63,6 +63,7 @@ router.post('/', async (req, res) => {
                         ...autoscaler,
                         scalingCount: autoscaler.scalingCount + 1
                     });
+                    logger.info(`Upscaling ${service.name} +1. Total of ${autoscaler.scalingCount}`);
                 }, UPSCALING_INTERVAL);
 
                 logger.info(`Upscaling started for ${service.name}`);
@@ -93,6 +94,7 @@ router.post('/', async (req, res) => {
             (async () => {
                 for (let i = 0; i < autoscaler.scalingCount; ++i) {
                     try {
+                        logger.info(`Downscaling ${serviceName}: ${i} out of ${autoscaler.scalingCount}`);
                         await axios.post(`${ORBITER_URL}/handle/${serviceName}`, {
                             direction: false
                         });
