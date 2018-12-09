@@ -40,7 +40,6 @@ services:
     image: google/cadvisor:latest
     ports:
     - 8080:8080
-    mode: global
     volumes:
     - /:/rootfs:ro
     - /var/run:/var/run:rw
@@ -48,6 +47,8 @@ services:
     - /var/lib/docker/:/var/lib/docker:ro
     networks:
       - devops-net
+    deploy:
+      mode: global
   httpbin:
     image: kennethreitz/httpbin
     ports:
