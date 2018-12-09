@@ -18,7 +18,7 @@ scrape_configs:
   static_configs:
           - targets: ['cadvisor:8080']
 
-- job_name:  'cadvisor2'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['172.31.43.23:8000']
+#- job_name:  'cadvisor2'
+#    scrape_interval: 5s
+#    static_configs:
+#     - targets: ['172.31.43.23:8000']
