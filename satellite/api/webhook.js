@@ -10,7 +10,7 @@ const autoscalers = new Map();
 const intervals = {};
 const ORBITER_URL = 'http://devops_orbiter:8000/v1/orbiter';
 const UPSCALING_INTERVAL = process.env.UPSCALING_INTERVAL || 42 * 1000;
-const DOWNSCALING_INTERVAL = process.env.DOWNSCALING_INTERVAL || 5 * 1000;
+const DOWNSCALING_INTERVAL = process.env.DOWNSCALING_INTERVAL || 10 * 1000;
 const DOWNSCALING_COOLDOWN = process.env.DOWNSCALING_COOLDOWN || 5 * 1000;
 
 router.use(async (req, res, next) => {
@@ -55,14 +55,15 @@ router.post('/', async (req, res) => {
                 logger.info(`Requesting autoscaling for: ${service.name}`);
                 
                 intervals[service.name] = setInterval(async () => {
-                    const autoscaler = autoscalers.get(service.name);
                     await axios.post(`${ORBITER_URL}/handle/${service.name}`, {
                         direction: true
                     });
+                    let autoscaler = autoscalers.get(service.name);
                     autoscalers.set(service.name, {
                         ...autoscaler,
                         scalingCount: autoscaler.scalingCount + 1
                     });
+                    autoscaler = autoscalers.get(service.name);
                     logger.info(`Upscaling ${service.name} +1. Total of ${autoscaler.scalingCount}`);
                 }, UPSCALING_INTERVAL);
 
