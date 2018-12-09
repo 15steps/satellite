@@ -17,4 +17,3 @@ scrape_configs:
   static_configs:
           - targets: 
             -'cadvisor:8080'
-            -'http://ec2-54-203-218-71.us-west-2.compute.amazonaws.com:8080'
