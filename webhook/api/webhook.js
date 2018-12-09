@@ -1,6 +1,7 @@
 const Router = require('express').Router;
 const orbiterAPI = require('../config/orbiterAPI');
 const axios = require('axios').default;
+const logger = require('../config/logger');
 /**
  * /api/webhook
  */
@@ -10,7 +11,7 @@ let serviceList = [];
 
 router.use(async (req, res, next) => {
     if (serviceList.length === 0) {
-        console.log('Atualizando lista de servicos do orbiter');
+        logger.info('Fetching Orbiter services');
         await getOrbiterServices();
     }
     next();
@@ -26,11 +27,11 @@ const getOrbiterServices = async (req, res) => {
                     replicas: 0
                 }
             });
-            console.log('Lista de servicos atualizada');
-            console.log(serviceList);
+            logger.info('Orbiter services fetched');
         }
     } catch (e) {
-        console.log(e);
+        logger.error('Error while fetching Orbiter autoscalers');
+        logger.error(e.stack);
     }
 }
 
@@ -38,22 +39,25 @@ router.post('/', async (req, res) => {
     const { 
         serviceName
     } = req.body.commonAnnotations;
-    console.log('Novo alerta disparado');
     if (req.body.status === 'firing') {
+        logger.info('New firing alert');
         try {
-            const service = serviceList.filter(service => service.name === serviceName)[0];
-            // const service = serviceList[0];
-            console.log(`Escalando servico: ${service}`);
+            const service = serviceList.find(service => service.name === serviceName);
+            logger.info(`Requesting autoscaling for: ${service.name}`);
             if (service) {
                 await axios.post(`http://devops_orbiter:8000/v1/orbiter/handle/${service.name}`, {
                     direction: true
                 });
-                console.log('Req p/ orbiter enviada com sucesso');
+                logger.info(`Successfully scaled ${service.name}`);
+            } else {
+                logger.warn('Service was not found on the list of Orbiter autoscalers');
             }
         } catch (e) {
-            console.log('Error while autoscaling service');
-            console.log(e);
+            logger.error('Error while autoscaling service');
+            logger.error(e.stack);
         }
+    } else {
+        logger.info('New rolved alert');
     }
     res.end();
 });

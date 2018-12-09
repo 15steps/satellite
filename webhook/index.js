@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const winston = require('winston');
+
 const api = require('./api/router');
+const logger = require('./config/logger');
 
 const app = express();
 const BASE_URL = '/api';
@@ -17,4 +20,4 @@ app.use((req, res) => {
     });
 });
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
