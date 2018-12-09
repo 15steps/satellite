@@ -56,7 +56,7 @@ services:
     networks:
       - devops-net
     deploy:
-      replicas: 2 
+      replicas: 3
       labels:
         orbiter: "true"
   satellite:
@@ -65,6 +65,10 @@ services:
       - 3000:3000
     networks:
       - devops-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
 networks:
   devops-net:
     attachable: true
