@@ -1,0 +1,15 @@
+{
+  "name": "requests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "requests": "./index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "artillery": "^1.6.0-26",
+    "node-cmd": "^3.0.0"
+  }
+}
