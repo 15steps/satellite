@@ -11,6 +11,7 @@ const intervals = {};
 const ORBITER_URL = 'http://devops_orbiter:8000/v1/orbiter';
 const UPSCALING_INTERVAL = process.env.UPSCALING_INTERVAL || 42 * 1000;
 const DOWNSCALING_INTERVAL = process.env.DOWNSCALING_INTERVAL || 5 * 1000;
+const DOWNSCALING_COOLDOWN = process.env.DOWNSCALING_COOLDOWN || 5 * 1000;
 
 router.use(async (req, res, next) => {
     logger.info('Fetching Orbiter services');
@@ -27,7 +28,6 @@ const getOrbiterServices = async (req, res) => {
                 autoscalers.set(service.name, {
                     name: service.name,
                     scalingCount: 0,
-                    // intervalId: null
                 });
             }
             logger.info('Orbiter services fetched');
@@ -65,11 +65,6 @@ router.post('/', async (req, res) => {
                     });
                 }, UPSCALING_INTERVAL);
 
-                // autoscalers.get(service.name).set(service.name, {
-                //     ...autoscaler,
-                //     intervalId
-                // });
-
                 logger.info(`Upscaling started for ${service.name}`);
             } else {
                 throw new Error('Service was not found on the list of Orbiter autoscalers');
@@ -90,29 +85,29 @@ router.post('/', async (req, res) => {
                 throw new Error(`Service ${serviceName} was not found`);
             }
             // Stop upscaling
-            // clearInterval(autoscaler.intervalId);
             clearInterval(intervals[serviceName]);
-            logger.info('Waiting 1m to start downscaling; intervalId '+ intervals[serviceName]);
-            await new Promise(resolve => setTimeout(resolve,  60 * 1000));
+            logger.info('Cooling down to start downscaling');
+            await new Promise(resolve => setTimeout(resolve,  DOWNSCALING_COOLDOWN));
 
             // Start downscaling
-            for (let i = 0; i < autoscaler.scalingCount; ++i) {
-                try {
-                    await axios.post(`${ORBITER_URL}/handle/${serviceName}`, {
-                        direction: false
-                    });
-                    await new Promise(resolve => setTimeout(resolve, DOWNSCALING_INTERVAL));
-                } catch (e) {
-                    logger.error(e.message);
-                    logger.error(e.stack);
+            (async () => {
+                for (let i = 0; i < autoscaler.scalingCount; ++i) {
+                    try {
+                        await axios.post(`${ORBITER_URL}/handle/${serviceName}`, {
+                            direction: false
+                        });
+                        await new Promise(resolve => setTimeout(resolve, DOWNSCALING_INTERVAL));
+                    } catch (e) {
+                        logger.error(e.message);
+                        logger.error(e.stack);
+                    }
                 }
-            }
+            })();
 
             // Reset autoscaler
             autoscalers.set(serviceName, {
                 ...autoscaler,
                 scalingCount: 0,
-                // intervalId: null
             });
         } catch (e) {
             logger.error(e.message);
