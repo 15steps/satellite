@@ -90,7 +90,7 @@ router.post('/', async (req, res) => {
             }
             // Stop upscaling
             clearInterval(autoscaler.intervalId);
-            logger.info('Waiting 5s to start downscaling');
+            logger.info('Waiting 1m to start downscaling; intervalId '+ autoscaler.intervalId);
             await new Promise(resolve => setTimeout(resolve,  60 * 1000));
 
             // Start downscaling
