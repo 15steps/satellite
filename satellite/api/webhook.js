@@ -1,5 +1,4 @@
 const Router = require('express').Router;
-const orbiterAPI = require('../config/orbiterAPI');
 const axios = require('axios').default;
 const logger = require('../config/logger');
 /**
@@ -7,13 +6,11 @@ const logger = require('../config/logger');
  */
 const router = Router();
 
-let serviceList = [];
+let autoscalers = new Map();
 
 router.use(async (req, res, next) => {
-    if (serviceList.length === 0) {
-        logger.info('Fetching Orbiter services');
-        await getOrbiterServices();
-    }
+    logger.info('Fetching Orbiter services');
+    await getOrbiterServices();
     next();
 }); 
 
@@ -21,12 +18,13 @@ const getOrbiterServices = async (req, res) => {
     try {
         const { data } = await axios.get('http://devops_orbiter:8000/v1/orbiter/autoscaler');
         if (data.data) {
-            serviceList = data.data.map(service => {
-                return {
+            for (const service of data.data) {
+                if (autoscalers.has(service.name)) continue;
+                autoscalers.set(service.name, {
                     name: service.name,
-                    replicas: 0
-                }
-            });
+                    scalingCount: 0,
+                });
+            }
             logger.info('Orbiter services fetched');
         }
     } catch (e) {
@@ -42,15 +40,18 @@ router.post('/', async (req, res) => {
     if (req.body.status === 'firing') {
         logger.info('New firing alert');
         try {
-            const service = serviceList.find(service => service.name === serviceName);
-            logger.info(`Requesting autoscaling for: ${service.name}`);
+            if (!serviceName) {
+                throw new Error('Service name not found');
+            }
+            const service = autoscalers.get(serviceName);
             if (service) {
+                logger.info(`Requesting autoscaling for: ${service.name}`);
                 await axios.post(`http://devops_orbiter:8000/v1/orbiter/handle/${service.name}`, {
                     direction: true
                 });
                 logger.info(`Successfully scaled ${service.name}`);
             } else {
-                logger.warn('Service was not found on the list of Orbiter autoscalers');
+                throw new Error('Service was not found on the list of Orbiter autoscalers');
             }
         } catch (e) {
             logger.error('Error while autoscaling service');
