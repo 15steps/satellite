@@ -76,7 +76,7 @@ services:
     ports:
       - 80:80
     environment:
-      - BALANCE=leastconn
+      - BALANCE=roundrobin
     volumes: 
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
