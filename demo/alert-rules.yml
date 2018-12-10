@@ -2,7 +2,7 @@ groups:
 - name: cadAdvisorAlert
   rules:
   - alert: HightUsageCPU
-    expr: (sum(rate(container_cpu_usage_seconds_total{name=~"devops_http.*"}[1m]) * 100)) / (count(container_cpu_usage_seconds_total{name=~"devops_http.*"})) > 0.01
+    expr: (sum(rate(container_cpu_usage_seconds_total{name=~"devops_http.*"}[1m]) * 100)) / (count(container_cpu_usage_seconds_total{name=~"devops_http.*"})) > 3
     labels:
       severity: page
     annotations:
