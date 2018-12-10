@@ -52,7 +52,9 @@ services:
   httpbin:
     image: kennethreitz/httpbin
     ports:
-    - 8001:80
+      - 8001:80
+    environment:
+      - SERVICE_PORTS=8001
     networks:
       - devops-net
     deploy:
@@ -70,11 +72,16 @@ services:
         constraints:
           - node.role == manager
   haproxy:
-    image: wellfelix/simple-haproxy
+    image: dockercloud/haproxy
     ports:
       - 80:80
+    environment:
+      - BALANCE=leastconn
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - devops-net
+    depends_on: httpbin
     deploy:
       placement:
         constraints:
