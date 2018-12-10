@@ -87,6 +87,18 @@ services:
       placement:
         constraints:
           - node.role == manager
+  swarm_viz:
+    image: dockersamples/visualizer
+    ports:
+      - 8088:8080
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks: 
+      - devops-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
 networks:
   devops-net:
     driver: overlay
