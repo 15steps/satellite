@@ -54,7 +54,7 @@ services:
     ports:
       - 8001:80
     environment:
-      - SERVICE_PORTS=8001
+      - SERVICE_PORTS=80
     networks:
       - devops-net
     deploy:
