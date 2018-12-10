@@ -69,6 +69,16 @@ services:
       placement:
         constraints:
           - node.role == manager
+  haproxy:
+    image: wellfelix/simple-haproxy
+    ports:
+      - 80:80
+    networks:
+      - devops-net
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
 networks:
   devops-net:
     attachable: true
