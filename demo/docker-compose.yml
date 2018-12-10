@@ -81,7 +81,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - devops-net
-    depends_on: httpbin
+    depends_on: 
+      - httpbin
     deploy:
       placement:
         constraints:
