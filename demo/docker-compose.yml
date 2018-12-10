@@ -89,5 +89,5 @@ services:
           - node.role == manager
 networks:
   devops-net:
+    driver: overlay
     attachable: true
-    
